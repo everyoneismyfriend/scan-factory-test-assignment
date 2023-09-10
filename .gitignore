@@ -1,8 +1,15 @@
 # Local files
 .temp
 
+# Byte-compiled / optimized / DLL files
+__pycache__
+*.py[cod]
+
 # Environments
 .venv
 
 # PyCharm stuff
 .idea
+
+# Database
+*.db

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from dns.resolver import Resolver, NXDOMAIN, NoAnswer, LifetimeTimeout
+from dns.resolver import Resolver, NXDOMAIN, NoAnswer, LifetimeTimeout, NoNameservers
 from validators.domain import domain
 
 
@@ -43,7 +43,7 @@ class WildCardDomainNameValidator(DomainNameValidator):
     def _resolve_domain_name(self, domain_name: str) -> set[str]:
         try:
             answers = self._resolver.resolve_name(domain_name)
-        except (NXDOMAIN, NoAnswer, LifetimeTimeout):
+        except (NXDOMAIN, NoAnswer, LifetimeTimeout, NoNameservers):
             return set()
         return set(answers.addresses())
 

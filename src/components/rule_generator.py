@@ -50,7 +50,7 @@ class RuleGenerator:
                     for validator in self._validators:
                         validator.validate_domain_name(domain_name)
                 except InvalidDomainName as ex:
-                    logger.info(f'{domain_name}: {ex}')
+                    logger.info(f'Invalid domain name: {domain_name} ({ex})')
                     self._invalid_domain_names[domain.project_id].add(domain_name)
                     break
                 else:
@@ -68,7 +68,7 @@ class RuleGenerator:
     @staticmethod
     def _make_rule(project_id: str, domain_names: set[str]) -> Rule:
         escaped_domain_names = (
-            domain_name.replace('.', '\.')
+            domain_name.replace('.', r'\.')
             for domain_name in domain_names
         )
         regexp = '.*(' + '|'.join(escaped_domain_names) + ')$'

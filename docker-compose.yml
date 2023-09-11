@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  tests:
+    build: .
+    command: "python -m unittest"
+
+  rules:
+    build: .
+    volumes:
+      - ./domains.db:/opt/app/data/domains.db
+    depends_on:
+      tests:
+        condition: service_completed_successfully

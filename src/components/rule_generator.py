@@ -9,6 +9,10 @@ logger = logging.getLogger(__name__)
 
 
 class RuleGenerator:
+    """
+    Generate regex patterns to find invalid domain names based on provided domains.
+    Each domain name is validated via the validators chain
+    """
     def __init__(self, validators: Iterable[DomainNameValidator]):
         self._validators: list[DomainNameValidator] = [
             RegEXDomainNameValidator(),  # The first validator in the chain makes sure

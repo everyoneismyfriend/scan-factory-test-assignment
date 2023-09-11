@@ -7,6 +7,10 @@ from .models import Domain, Rule
 
 
 class SQLiteService:
+    """
+    Service performing database operations. Propagates SQLite exceptions if database
+    schema is invalid
+    """
     def __init__(self, connection: sqlite3.Connection):
         self.connection = connection
 

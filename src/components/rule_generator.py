@@ -1,13 +1,20 @@
+import logging
 from collections import defaultdict
 from typing import Iterable
 
 from .models import Domain, Rule
-from .validator import DomainNameValidator, InvalidDomainName
+from .validator import DomainNameValidator, InvalidDomainName, RegEXDomainNameValidator
+
+logger = logging.getLogger(__name__)
 
 
 class RuleGenerator:
-    def __init__(self, validator: DomainNameValidator):
-        self._validator = validator
+    def __init__(self, validators: Iterable[DomainNameValidator]):
+        self._validators: list[DomainNameValidator] = [
+            RegEXDomainNameValidator(),  # The first validator in the chain makes sure
+                                         # the domain format is correct
+            *validators,
+        ]
         self._valid_domain_names: set[str] = set()
         self._invalid_domain_names: defaultdict[str, set[str]] = defaultdict(set)
 
@@ -40,8 +47,10 @@ class RuleGenerator:
                     break
 
                 try:
-                    self._validator.validate_domain_name(domain_name)
-                except InvalidDomainName:
+                    for validator in self._validators:
+                        validator.validate_domain_name(domain_name)
+                except InvalidDomainName as ex:
+                    logger.info(f'{domain_name}: {ex}')
                     self._invalid_domain_names[domain.project_id].add(domain_name)
                     break
                 else:

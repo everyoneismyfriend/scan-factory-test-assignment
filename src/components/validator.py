@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
-from dns.resolver import Resolver, NXDOMAIN, NoAnswer
+from dns.resolver import Resolver, NXDOMAIN, NoAnswer, LifetimeTimeout
+from validators.domain import domain
 
 
 class InvalidDomainName(Exception):
@@ -10,9 +11,13 @@ class InvalidDomainName(Exception):
 class DomainNameValidator(ABC):
     @abstractmethod
     def validate_domain_name(self, domain_name: str) -> None:
-        """
-        raises: InvalidDomainName
-        """
+        """ Raises InvalidDomainName """
+
+
+class RegEXDomainNameValidator(DomainNameValidator):
+    def validate_domain_name(self, domain_name: str) -> None:
+        if not domain(domain_name):
+            raise InvalidDomainName('Invalid domain format')
 
 
 class WildCardDomainNameValidator(DomainNameValidator):
@@ -38,7 +43,7 @@ class WildCardDomainNameValidator(DomainNameValidator):
     def _resolve_domain_name(self, domain_name: str) -> set[str]:
         try:
             answers = self._resolver.resolve_name(domain_name)
-        except (NXDOMAIN, NoAnswer):
+        except (NXDOMAIN, NoAnswer, LifetimeTimeout):
             return set()
         return set(answers.addresses())
 
